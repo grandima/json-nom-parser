@@ -18,7 +18,6 @@ fn parse_list<'a, 'b: 'a>(keys: &'b mut HashMap<String, usize>) -> impl FnMut(&'
 fn parse_pair<'a, 'b: 'a>(keys: &'b mut HashMap<String, usize>) -> impl FnMut(&'a str) -> IResult<&'a str, (&'a str, &'a str)> + 'a  {
     move |input: &'a str| -> IResult<&'a str, (&'a str, &'a str)> {
         let (left, key) = parse_unsized_key()(&input)?;
-        //TODO: write more verbose error
         let value_size = keys.remove(key).ok_or(Failure(Error::new(input, ErrorKind::Tag)))?;
         parse_preceded_value(value_size, char::is_alphanumeric)(left).map(|(left, value)|(left, (key, value)))
     }
@@ -62,12 +61,20 @@ mod tests {
         m
     };
 }
+    const INPUT: &str = r#" { "type" : "Ed25519", "public_key" : "1847179d3572cc1b80516ba49096efada0f1930632ab16a9f10bf24ce2c360c2" , "peer_id":"12D3KooWBT8pyJAfWJhdeGYAtKvcaUmm78ExyZ6uo6BEimYNVat1","signature":"8e5d1f0c977fc3017135032610f1cc40e5774be436e5634d090f1df52eeb401763964031070b6baa8e2b878477cc75b5a269b6bbc4da548b89ffcaac9e4db50e","payload_type":"","payload":"12112f636f64612f79616d75782f312e302e30"}"#;
     use super::*;
     #[test]
-    fn it_works() {
+    fn test_correctness_all_in_one() {
         let mut key_value_size = KEY_VALUE_SIZE.clone();
-        let input = r#" { "type" : "Ed25519", "public_key" : "1847179d3572cc1b80516ba49096efada0f1930632ab16a9f10bf24ce2c360c2" , "peer_id":"12D3KooWBT8pyJAfWJhdeGYAtKvcaUmm78ExyZ6uo6BEimYNVat1","signature":"8e5d1f0c977fc3017135032610f1cc40e5774be436e5634d090f1df52eeb401763964031070b6baa8e2b878477cc75b5a269b6bbc4da548b89ffcaac9e4db50e","payload_type":"","payload":"12112f636f64612f79616d75782f312e302e30"}"#;
-        let res = parse_json(&mut key_value_size.clone())(input);
-        println!("{:?}", res);
+        let input = INPUT;
+        let (left, res) = parse_json(&mut key_value_size)(input).unwrap();
+        assert_eq!(left.len(), 0);
+        let mut correct_key_value_size = KEY_VALUE_SIZE.clone();
+        for (key, value) in res {
+            assert!(value.chars().all(char::is_alphanumeric));
+            let (correct_key, correct_value_size) = correct_key_value_size.remove_entry(key).unwrap();
+            assert_eq!(value.len(), correct_value_size);
+        }
+        assert_eq!(correct_key_value_size.len(), 0);
     }
 }
