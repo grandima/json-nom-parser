@@ -8,8 +8,8 @@ See `test_correctness_all_in_one` in `src/lib.rs` for example usage.
 
 ### Tests
 
-- **Correctness Test**: `test_correctness_all_in_one` ensures the parser accurately reads keys and values according to the specified format.
-- **Performance Test**: `bench_parse_json` in `benchmarks/benches/json.rs` evaluates the parser's performance.
+- **Correctness Test**: `test_correctness_all_in_one` ensures the parser accurately reads keys and values according to the specified format. 
+- **Performance Test**: `bench_parse_json` in `benchmarks/benches/json.rs` evaluates the parser's performance. To run: open terminal from `benchmarks` directory and run `cargo bench`. 
 
 ### Parsing Logic
 
