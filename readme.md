@@ -1,36 +1,27 @@
-# handshake_payload json parser
-This lib parses the specific json format structure. 
-The example format is taken from here:
+# handshake_payload JSON Parser
 
-https://metrics.openmina.com/network/messages/14?node=node1
+This library parses a specific JSON format, exemplified by the handshake payload data used in [OpenMina](https://metrics.openmina.com/network/messages/14?node=node1) for nodes like `node1` under the stream kind `/noise` and message kind `handshake_payload`.
 
-- Node: `node1`
-- Direction: `Incoming`
-- Stream Kind: `/noise`
-- Message Kind: `handshake_payload`
+### Example Usage
 
-The example usage is located inside `test_correctness_all_in_one`
+See `test_correctness_all_in_one` in `src/lib.rs` for example usage.
 
-### Tests: 
+### Tests
 
-The correctness test is `test_correctness_all_in_one` inside `src/lib.rs`.
-The performance test is `bench_parse_json` inside `benchmarks/benches/json.rs`
+- **Correctness Test**: `test_correctness_all_in_one` ensures the parser accurately reads keys and values according to the specified format.
+- **Performance Test**: `bench_parse_json` in `benchmarks/benches/json.rs` evaluates the parser's performance.
 
-### The parsing logic: 
-- all whitespaces between keys and values are ignored
-- Create a `map` where `key` is json key and `value` is the json value's length
-- the `key` is read from `"` to `"`
-- the `value length` is extracted by the `key` from the `map`
-- the `value` is read from `"` to `"` but only `value length` times and it must be alphanumeric
-- the parsing result is a vector of tuples `[(key, value), (key, value)...]`
+### Parsing Logic
 
-### Implementation note:
+- Whitespaces between keys and values are ignored.
+- A map is created with keys as JSON keys and values as the lengths of the corresponding JSON values.
+- Keys are read from one quotation mark to another.
+- Value lengths are determined based on the keys from the map.
+- Values are alphanumeric characters, read from one quotation mark to another. They must have the specified length.
+- The parsing result is a vector of tuples of slices to the input `[(key1, value1), (key2, value2)...]`.
 
-This library just demonstrates an ability to parse a *specific* json. 
-It **is afraid** of a buffer overflow attack. 
 
-Here are the vulnerabilities for that attack:
- - `all whitespaces are ignored`. 
- - the alleged key is read from `"` to `"`. Thus, it can be *any* length.
+### Implementation Notes
 
-The only protection that exists in this implementation is `value length`.  
+- This library is designed for parsing a *specific* JSON structure.
+- The parser ignores whitespaces **and does not** validate the length of keys, which could lead to buffer overflow if keys are excessively long or there are a lot of whitespaces.
