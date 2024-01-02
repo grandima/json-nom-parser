@@ -8,6 +8,20 @@ use nom::Err::{Failure};
 use nom::error::{Error, ErrorKind, ParseError};
 use nom::multi::separated_list1;
 use nom::sequence::{delimited};
+use lazy_static::lazy_static;
+
+lazy_static! {
+    pub static ref KEY_VALUE_SIZE: HashMap<String, usize> = {
+        let mut m = HashMap::new();
+        m.insert("type".to_string(), 7);
+        m.insert("public_key".to_string(), 64);
+        m.insert("peer_id".to_string(), 52);
+        m.insert("signature".to_string(), 128);
+        m.insert("payload_type".to_string(), 0);
+        m.insert("payload".to_string(), 38);
+        m
+    };
+}
 
 pub fn parse_json<'a, 'b: 'a>(keys: &'b mut HashMap<String, usize>) -> impl FnMut(&'a str) -> IResult<&'a str, Vec<(&'a str, &'a str)>> + 'a {
     delimited(ws(char('{')), parse_list(keys), ws(char('}')))
@@ -43,20 +57,7 @@ fn ws<'a, F, O, E: ParseError<&'a str>>(inner: F) -> impl Parser<&'a str, O, E>
 }
 #[cfg(test)]
 mod tests {
-    use lazy_static::lazy_static;
 
-    lazy_static! {
-    static ref KEY_VALUE_SIZE: HashMap<String, usize> = {
-        let mut m = HashMap::new();
-        m.insert("type".to_string(), 7);
-        m.insert("public_key".to_string(), 64);
-        m.insert("peer_id".to_string(), 52);
-        m.insert("signature".to_string(), 128);
-        m.insert("payload_type".to_string(), 0);
-        m.insert("payload".to_string(), 38);
-        m
-    };
-}
     use super::*;
     #[test]
     fn test_correctness_all_in_one() {

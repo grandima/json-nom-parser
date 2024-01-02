@@ -7,7 +7,6 @@ edition = "2021"
 
 [dependencies]
 nom = {version = "7", features = ["default"]}
-[dev-dependencies]
 lazy_static = "1.4"
 
 [workspace]
