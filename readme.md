@@ -24,4 +24,4 @@ See `test_correctness_all_in_one` in `src/lib.rs` for example usage.
 ### Implementation Notes
 
 - This library is designed for parsing a *specific* JSON structure.
-- The parser ignores whitespaces **and does not** validate the length of keys, which could lead to buffer overflow if keys are excessively long or there are a lot of whitespaces.
+- The parser **ignores** whitespaces **and does not** validate the length of keys. It will lead to **buffer overflow** if keys are excessively long or there are a lot of whitespaces. Upon request, the implementation can be modified to include this scenario. 
