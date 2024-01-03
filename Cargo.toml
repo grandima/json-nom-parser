@@ -9,5 +9,10 @@ edition = "2021"
 nom = {version = "7", features = ["default"]}
 lazy_static = "1.4"
 
+[profile.bench]
+debug = true
+lto = true
+codegen-units = 1
+
 [workspace]
 members = [".", "benchmarks/"]
