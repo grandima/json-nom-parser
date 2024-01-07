@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate criterion;
 
+use std::time::Duration;
 use json_nom_parser::*;
 use criterion::Criterion;
 #[global_allocator]
@@ -24,5 +25,9 @@ fn bench_parse_json_key_length(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench_parse_json_key_length, bench_parse_json_whitespace);
+criterion_group! {
+    name = benches;
+    config = Criterion::default().measurement_time(Duration::from_secs(10));
+    targets = bench_parse_json_key_length, bench_parse_json_whitespace
+}
 criterion_main!(benches);
